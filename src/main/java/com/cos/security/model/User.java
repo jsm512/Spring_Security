@@ -19,6 +19,9 @@ public class User {
     private String password;
     private String email;
     private String role;
+
+    private String provider; //google
+    private String providerId; //google에서 사용한 Id가 들어감 -> 10721943467131575006
     @CreationTimestamp
     private Timestamp createDate;
 

@@ -18,19 +18,25 @@ PrincipalDetails가 UserDetails 인터페이스를 상속받으면 -> PrincipalD
  */
 
 import com.cos.security.model.User;
+import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 
 //@Service로 메모리에 띄우지 않는 이유 -> 나중에 강제로 띄워줄거라 미리 설정할 필요 없음
-public class PrincipalDetails implements UserDetails {
+@Data
+public class PrincipalDetails implements UserDetails, OAuth2User {
 
     private User user;
     public PrincipalDetails(User user){
         this.user = user;
     }
+
+
     // 해당 User의 권한을 return하는 곳
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -73,5 +79,15 @@ public class PrincipalDetails implements UserDetails {
         user.getLoginDate();의 값과 현재 시간을 계산해 => 1년을 초과하면 return false, 아니면 true로 만들면 된다!!
          */
         return true;
+    }
+
+    @Override
+    public Map<String, Object> getAttributes() {
+        return null;
+    }
+
+    @Override
+    public String getName() {
+        return null;
     }
 }
