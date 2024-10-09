@@ -15,6 +15,16 @@ User 클래스도 정해져 있다 -> User Object의 타입은 UserDetails 타�
 
 PrincipalDetails가 UserDetails 인터페이스를 상속받으면 -> PrincipalDetails 역시 Authentication 안에 저장할 수 있음
 
+
+PrincipalDetails를 만드는 이유는 두 가지 목적이 있다
+Security가 들고 있는 Session 정보로 들어가기 위해 (Authentication 객체를 통해)
+Authentication 객체가 받을 수 있는 Type은 두가지 -> OAuth2User, UserDetails
+그러나, OAuth2User와 UserDetails로는 User의 정보를 찾을 수 없음
+그래서 PrincipalDetails라는 class를 만들고 UserDetails를 상속받아 User Object를 받음
+UserDetails -> PrincipalDetails(User Object를 들고 있어 Session 정보를 가져올 수 있음)
+마찬가지로 이유로 OAuth2User도 상속받음
+
+이제 어떤 로그인이 들어와도 PrincipalDetails를 통해 User에 접근할 수 있음
  */
 
 import com.cos.security.model.User;
@@ -32,8 +42,16 @@ import java.util.Map;
 public class PrincipalDetails implements UserDetails, OAuth2User {
 
     private User user;
+    private Map<String, Object> attributes;
+    //일반 로그인 생성자
     public PrincipalDetails(User user){
         this.user = user;
+    }
+
+    //OAuth2 로그인 생성자
+    public PrincipalDetails(User user, Map<String, Object> attributes){
+        this.user = user;
+        this.attributes = attributes;
     }
 
 
@@ -83,7 +101,7 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
 
     @Override
     public Map<String, Object> getAttributes() {
-        return null;
+        return attributes;
     }
 
     @Override

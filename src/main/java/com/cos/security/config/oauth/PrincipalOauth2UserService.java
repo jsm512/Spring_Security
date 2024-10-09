@@ -1,5 +1,11 @@
 package com.cos.security.config.oauth;
 
+import com.cos.security.auth.PrincipalDetails;
+import com.cos.security.model.User;
+import com.cos.security.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -8,6 +14,14 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
+
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    public PrincipalOauth2UserService(@Lazy BCryptPasswordEncoder bCryptPasswordEncoder) {
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+    }
+
+    @Autowired
+    private UserRepository userRepository;
 
     //후처리 되는 함수 -> 구글로 부터 받은 userRequest 데이터에 대한 후처리를 담당함
     @Override
@@ -23,9 +37,30 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
         userRequest로 뭘 하냐? -> 회원 프로필을 받음 -> 이때 사용되는 함수가 loadUser()함수임 : loadUser() 함수를 통해 구글로 부터 회원 프로필을 받을 수 있다
          */
         OAuth2User oAuth2User = super.loadUser(userRequest);
-        System.out.println("getAttributes : " + super.loadUser(userRequest).getAttributes());
+        System.out.println("getAttributes : " + oAuth2User.getAttributes());
 
+        String provider = userRequest.getClientRegistration().getRegistrationId(); // google
+        String providerId = oAuth2User.getAttribute("sub");
+        String username = provider+"_"+providerId; //google_sub
+        String password = bCryptPasswordEncoder.encode("머야머야");
+        String email = oAuth2User.getAttribute("email");
+        String role = "USER";
 
-        return super.loadUser(userRequest);
+        //이미 회원가입이 되어 있는 경우
+        User userEntity = userRepository.findByUsername(username);
+
+        if(userEntity == null){
+            userEntity = User.builder()
+                    .username(username)
+                    .password(password)
+                    .email(email)
+                    .role(role)
+                    .provider(provider)
+                    .providerId(providerId)
+                    .build();
+            userRepository.save(userEntity);
+        }
+
+        return new PrincipalDetails(userEntity, oAuth2User.getAttributes()); //Authentication 객체로 리턴
     }
 }

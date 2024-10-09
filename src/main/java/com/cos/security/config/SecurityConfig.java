@@ -20,14 +20,15 @@ public class SecurityConfig{
     /*
     @EnableWebSecurity -> SecurityConfig에서 등록한 필터가 스프링에서 기본 제공하는 필터에 등록이 된다
      */
-
-    @Autowired
-    private PrincipalOauth2UserService principalOauth2UserService;
-    // 비밀번호 암호화
     @Bean // -> 해당 메서드의 리턴되는 오브젝트를 IoC로 등록해준다
     public BCryptPasswordEncoder encodePwd(){
         return new BCryptPasswordEncoder();
     }
+
+
+    @Autowired
+    private PrincipalOauth2UserService principalOauth2UserService;
+    // 비밀번호 암호화
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
