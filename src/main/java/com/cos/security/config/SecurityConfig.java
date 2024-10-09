@@ -20,10 +20,12 @@ public class SecurityConfig{
     /*
     @EnableWebSecurity -> SecurityConfig에서 등록한 필터가 스프링에서 기본 제공하는 필터에 등록이 된다
      */
-    @Bean // -> 해당 메서드의 리턴되는 오브젝트를 IoC로 등록해준다
-    public BCryptPasswordEncoder encodePwd(){
-        return new BCryptPasswordEncoder();
-    }
+
+    //BCryptPasswordEncoder class를 따로 만들어서 컨테이너에 등록해줌 <- 순환참조 오류 방지
+//    @Bean // -> 해당 메서드의 리턴되는 오브젝트를 IoC로 등록해준다
+//    public BCryptPasswordEncoder encodePwd(){
+//        return new BCryptPasswordEncoder();
+//    }
 
 
     @Autowired

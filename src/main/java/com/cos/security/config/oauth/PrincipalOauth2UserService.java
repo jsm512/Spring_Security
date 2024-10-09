@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    public PrincipalOauth2UserService(@Lazy BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public PrincipalOauth2UserService(BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
